@@ -33,29 +33,30 @@ if [ $# -lt 1 ]; then
 	exit 3
 fi
 
-if [ ! -e $1 ]; then
+if [ ! -e "$1" ]; then
 	to_red
-    echo 'Error: file not exists!'
-    exit 2
+	echo 'Error: file not exists!'
+	exit 2
 fi
 
 # run_out($1=out_file, $2=lang)
 run_out() {
+	local cmd=""
 	if [[ $2 =~ ^c$|^cpp$ ]]; then
-		$1
-	elif [ $2 = 'java' ]; then
-		java ${1%.*}
-	elif [ $2 = 'kt' ]; then
-		java -jar $1;
-	elif [ $2 = 'py' ]; then
-		python $1;
+		cmd="$1"
+	elif [ "$2" = 'java' ]; then
+		cmd="java ${1%.*}"
+	elif [ "$2" = 'kt' ]; then
+		cmd="java -jar $1";
+	elif [ "$2" = 'py' ]; then
+		cmd="python $1";
 	else
 		to_red
 		echo 'Error: Unknown file type!'
 		exit 1
 	fi
 
-	if [ $? != 0 ]; then
+	if ! eval "$cmd"; then
 		to_red
 		echo 'Error: Execution failed!'
 		exit 2
@@ -70,11 +71,11 @@ run() {
 
 	start_time=$(date +%s%N)
 
-    if [ -e input.txt ]; then
-        run_out $1 $2 < input.txt
-    else
-        run_out $1 $2
-    fi
+	if [ -e input.txt ]; then
+		run_out "$1" "$1" < input.txt
+	else
+		run_out "$1" "$2"
+	fi
 
 	end_time=$(date +%s%N)
 
@@ -95,13 +96,13 @@ lang='cpp';
 if [[ $extension == c ]]; then
 	lang='c'
 	out_file=$file_name.exe	# be different to C++ out file
-elif [ $extension = 'java' ]; then
+elif [ "$extension" = 'java' ]; then
 	lang='java'
 	out_file=$file_name.class
-elif [ $extension = 'kt' ]; then
+elif [ "$extension" = 'kt' ]; then
 	lang='kt'
 	out_file=$file_name.jar
-elif [ $extension = 'py' ]; then
+elif [ "$extension" = 'py' ]; then
 	lang='py'
 	out_file=$path	# Python has no out file
 elif [[ ! $extension =~ ^cc$|^cpp$|^cx$ ]]; then
@@ -111,20 +112,20 @@ elif [[ ! $extension =~ ^cc$|^cpp$|^cx$ ]]; then
 fi
 
 if [[ $lang =~ ^c$|^cpp$ && ! $out_file =~ ^/.*$ ]]; then
-   out_file=./$out_file
+	out_file=./$out_file
 fi
 
-if [ -e $out_file ]; then
-    source_time=$(stat -c %Y  $path);
-    out_time=$(stat -c %Y $out_file);
+if [ -e "$out_file" ]; then
+	source_time=$(stat -c %Y "$path");
+	out_time=$(stat -c %Y "$out_file");
 
-    if [ $source_time -lt $out_time ]; then
+	if [ "$source_time" -lt "$out_time" ]; then
 		to_green
 		echo -e "Log: Reuse compiled file"
 
-        run $out_file $lang
-        exit 0
-    fi
+		run $out_file $lang
+		exit 0
+	fi
 fi
 
 # compile($1=path, $2=out_file, $3=lang)
@@ -133,7 +134,7 @@ compile() {
 	out_file=$2
 	lang=$3
 
-	if [ $lang = 'py' ]; then
+	if [ "$lang" = 'py' ]; then
 		return 0
 	fi
 
@@ -142,17 +143,18 @@ compile() {
 
 	start_time=$(date +%s%N)
 
-	if [ $lang = 'cpp' ]; then
-		g++ $path -Wall -O2 -o $out_file
-	elif [ $lang = 'c' ]; then
-		gcc $path -Wall -O2 -o $out_file
-	elif [ $lang = 'java' ]; then
-		javac $path
-	elif [ $lang = 'kt' ]; then
-		kotlinc $path -include-runtime -d $out_file
+	local cmd=""
+	if [ "$lang" = 'cpp' ]; then
+		cmd="g++ $path -Wall -O2 -o $out_file"
+	elif [ "$lang" = 'c' ]; then
+		cmd="gcc $path -Wall -O2 -o $out_file"
+	elif [ "$lang" = 'java' ]; then
+		cmd="javac $path"
+	elif [ "$lang" = 'kt' ]; then
+		cmd="kotlinc $path -include-runtime -d $out_file"
 	fi
 
-	if [ $? != 0 ]; then
+	if ! eval "$cmd"; then
 		return 3
 	fi
 
@@ -162,4 +164,4 @@ compile() {
 	echo "Log: Compilation time: $(( (end_time - start_time) / 1000000 ))ms"
 }
 
-compile $path $out_file $lang && run $out_file $lang
+compile "$path" "$out_file" "$lang" && run "$out_file" "$lang"

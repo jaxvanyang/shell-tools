@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Daily Archive - Archive designated files & directories
+# Check daily_archive.config for example configuration
 
 set -e
 

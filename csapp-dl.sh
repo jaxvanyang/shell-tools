@@ -12,9 +12,8 @@ if [[ $# = 0 ]]; then
   exit 0
 fi
 
-for code in $*; do
-  wget "http://csapp.cs.cmu.edu/3e/ics3/code/$code"
-  if [[ $? -ne 0 ]]; then
+for code in "$@"; do
+  if ! wget "http://csapp.cs.cmu.edu/3e/ics3/code/$code"; then
     help
     exit 1
   fi
