@@ -61,12 +61,43 @@ main() {
 
 	wrapper="$PREFIX/$name"
 
-	# Check if wrapper exists
+	# Check the target wrapper path before processing
+	
+	# Check if it's a directory
+	if [ -d "$wrapper" ]; then
+		echo "The wrapper - $wrapper/ already exists and it's a directory."
+		echo "You should manually remove it, aborting..." 1>&2
+		exit 1
+	fi
+
+	# Check if it's a symlink
+	if [ -L "$wrapper" ]; then
+		local reply="n"
+
+		echo "The wrapper - $wrapper already exists and it's a symlink."
+		read -rp "Do you want to remove it? [y/N]: " reply
+		if [[ "$reply" != [yY] ]]; then
+			echo "The symlink must be remove first, or else the linked file will be overriden, aborting..."
+			exit 1
+		fi
+
+		echo "Removing the symlink..."
+		rm "$wrapper"
+	fi
+
+	# Check if it exists
 	if [ -e "$wrapper" ]; then
+		# only override regular file, otherwise may cause errors
+		if [ ! -f "$wrapper" ]; then
+			echo "The wrapper - $wrapper already exists and it isn't a regular file." 1>&2
+			echo "It's better not to modify it, aborting..." 1>&2
+			exit 1
+		fi
+
 		local reply="n"
 
 		echo "The wrapper - $wrapper already exists."
-		read -rp "Do you want to replace it? [y/N]: " reply
+		read -rp "Do you want to override it? [y/N]: " reply
 		if [[ "$reply" != [yY] ]]; then
 			exit
 		fi
