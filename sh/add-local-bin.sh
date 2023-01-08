@@ -44,13 +44,14 @@ main() {
 	executable="$1"
 
 	# Change executable to absolute path if it's relative path
-	if [[ ! $executable =~ ^/.*$ ]]; then
+	if [[ ! "$executable" =~ ^/.*$ ]]; then
 		executable="$PWD/$executable"
 	fi
 
 	# Check if executable exists
 	if [ ! -f "$executable" ]; then
-		help_and_exit
+		echo "The executable - $executable doesn't exist!" 1>&2
+		exit 1
 	fi
 
 	# Use alias if provided
@@ -60,12 +61,27 @@ main() {
 
 	wrapper="$PREFIX/$name"
 
+	# Check if wrapper exists
+	if [ -e "$wrapper" ]; then
+		local reply="n"
+
+		echo "The wrapper - $wrapper already exists."
+		read -rp "Do you want to replace it? [y/N]: " reply
+		if [[ "$reply" != [yY] ]]; then
+			exit
+		fi
+	fi
+
 	# Create the wrapper script
 	cat > "$wrapper" <<EOF
 #/usr/bin/env bash
 
 exec "$executable" "\$@"
 EOF
+
+	# strip any "./" in executable path
+	sed -i 's#\./##g' "$wrapper"
+
 	chmod +x "$wrapper"
 }
 
