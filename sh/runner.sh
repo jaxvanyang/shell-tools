@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Just like Code Runner
 # Reference: https://stackoverflow.com/questions/965053/extract-filename-and-extension-in-bash

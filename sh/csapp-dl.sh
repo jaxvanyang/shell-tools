@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 function help() {
   echo "Description: use Wget to download CSAPP code"
