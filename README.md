@@ -8,6 +8,12 @@ Migrated from [lang-study](https://github.com/JaxVanYang/lang-study/tree/main/sh
 
 ## Showcase
 
+> Thanks for [asciinema/asciinema: Terminal session recorder 📹](https://github.com/asciinema/asciinema)
+
 Help messages are integrated in each tool, I would only list some examples here.
 
 > TODO: write examples for each tool.
+
+- `add-local-bin.sh`:
+
+	[![asciicast](https://asciinema.org/a/550684.svg)](https://asciinema.org/a/550684)
