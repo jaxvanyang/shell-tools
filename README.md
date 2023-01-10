@@ -17,3 +17,7 @@ Help messages are integrated in each tool, I would only list some examples here.
 - `add-local-bin.sh`:
 
 	[![asciicast](https://asciinema.org/a/550684.svg)](https://asciinema.org/a/550684)
+
+- `csapp-dl.sh`:
+
+	[![asciicast](https://asciinema.org/a/550688.svg)](https://asciinema.org/a/550688)
